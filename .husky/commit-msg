@@ -1,0 +1,45 @@
+#!/bin/sh
+# commit_msg=$(cat "$1")
+# emoji_msg=$(echo "$commit_msg" | npx --no -- commitlint --quiet)
+# if [ $? -eq 0 ] && [ ! -z "$emoji_msg" ]; then
+#   echo "$emoji_msg" > "$1"
+
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Run commitlint and capture the exit code
+npx --no -- commitlint --edit "$commit_msg_file"
+exit_code=$?
+
+# If commitlint failed, display the commit message and a more helpful message
+if [ $exit_code -ne 0 ]; then
+  echo ""
+  echo "\033[0;31m✖ Commit message validation failed!\033[0m"
+  echo "\033[0;33mYour commit message:\033[0m"
+  echo "\033[0;37m$commit_msg\033[0m"  # Display the commit message in white
+  
+  echo ""
+  echo "\033[0;33mExpected commit message format:\033[0m"
+  echo "\033[0;36m<type>: <subject>\033[0m"
+  echo ""
+  echo "\033[0;33mWhere <type> must be one of:\033[0m"
+  echo "  feat     ✨ (new feature)"
+  echo "  fix      🐛 (bug fix)"
+  echo "  docs     📚 (documentation)"
+  echo "  style    💄 (formatting, no code change)"
+  echo "  refactor ♻️  (refactoring code)"
+  echo "  perf     ⚡️ (performance improvements)"
+  echo "  test     🧪 (adding tests)"
+  echo "  chore    🔧 (maintenance tasks)"
+  echo "  ci       👷 (CI related changes)"
+  echo "  revert   ⏪ (revert changes)"
+  echo ""
+  echo "\033[0;33mExamples of valid commit messages:\033[0m"
+  echo "  feat: Add user authentication"
+  echo "  fix: Resolve issue with API timeout"
+  echo "  docs: Update README with installation steps"
+  echo ""
+  exit $exit_code
+fi
+
+exit 0
